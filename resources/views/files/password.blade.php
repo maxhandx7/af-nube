@@ -175,7 +175,7 @@
 </style>
 @endpush
 
-@push('scripts')
+@section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const passwordForm = document.getElementById('password-form');
@@ -258,4 +258,4 @@
         });
     });
 </script>
-@endpush
+@endsection

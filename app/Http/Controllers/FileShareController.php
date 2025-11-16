@@ -85,16 +85,24 @@ class FileShareController extends Controller
     // DELETE /f/{slug}?token=xxxxx
     public function destroy(Request $request, $slug)
     {
-        $token = $request->token;
         $file = FileShare::where('slug', $slug)->firstOrFail();
 
-        if (!$token || !hash_equals($file->delete_token, $token)) {
-            return response()->json(['message' => 'Token inválido'], 403);
+        if (!$request->token || !hash_equals($file->delete_token, $request->token)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Token inválido'
+            ]);
         }
 
         $file->removeFileFromStorage();
-        return redirect()->route('files.index')->with('success', 'Archivo eliminado');
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Archivo eliminado correctamente',
+            'redirect' => route('files.index')
+        ]);
     }
+
 
     public function streamInline($slug)
     {

@@ -187,7 +187,8 @@
             </div>
         </footer>
     </div>
-
+    {!! Html::script('melody/vendors/js/vendor.bundle.base.js') !!}
+    {!! Html::script('melody/vendors/js/vendor.bundle.addons.js') !!}
     {{-- Scripts con carga diferida --}}
     <script>
         // Cargar scripts no críticos después de que la página esté lista
@@ -215,6 +216,6 @@
         });
     </script>
     
-    @stack('scripts')
+    @yield('scripts')
 </body>
 </html>

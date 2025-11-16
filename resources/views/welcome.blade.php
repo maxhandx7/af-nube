@@ -122,7 +122,7 @@
                         <i class="bi bi-plus-circle me-1"></i>Subir otro archivo
                     </button>
                     <a href="#" class="btn btn-outline-success" id="share-btn" target="_blank">
-                        <i class="bi bi-eye me-1"></i>Abrir enlace
+                        <i class="bi bi-eye me-1"></i>Ver archivo
                     </a>
                 </div>
             </div>
@@ -229,7 +229,7 @@
 </style>
 @endpush
 
-@push('scripts')
+@section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('upload-form');
@@ -447,4 +447,4 @@
         submitBtn.disabled = true;
     });
 </script>
-@endpush
+@endsection
