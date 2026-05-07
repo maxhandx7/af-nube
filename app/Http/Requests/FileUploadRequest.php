@@ -22,8 +22,7 @@ class FileUploadRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file' => ['required','file','max:51200'], // max 50MB (valor en KB)
-            // opcional: 'allowed_mimes' => 'mimes:jpg,png,pdf,zip,docx,...' si quieres restringir
+            'file' => ['required','file'],
             'expire_days' => ['nullable','integer','min:1','max:30'], // permitir custom expiración (1-30 días)
             'file_password' => 'nullable|min:4'
         ];
@@ -33,7 +32,6 @@ class FileUploadRequest extends FormRequest
     public function messages()
     {
         return [
-            'file.max' => 'El archivo es demasiado grande. Máximo 50MB por defecto.',
             'expire_days.min' => 'El período mínimo de expiración es de 1 día.',
             'expire_days.max' => 'El período máximo de expiración es de 30 días.',
             'file_password.min' => 'La contraseña del archivo debe tener al menos 4 caracteres.',

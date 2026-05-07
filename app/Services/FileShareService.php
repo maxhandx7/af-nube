@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use App\Models\File as FileShare;
@@ -9,59 +10,144 @@ use Illuminate\Support\Facades\Hash;
 
 class FileShareService
 {
-    protected $disk;
+    // El disco se resuelve desde config: 'uploads' apunta a S3 o local según .env
+    protected string $disk = 'uploads';
 
-    public function __construct()
-    {
-        $this->disk = Storage::disk('uploads'); // 'uploads' debe estar en config/filesystems.php
-    }
+    // ────────────────────────────────────────────────────────────────────
+    // SUBIR ARCHIVO
+    // ────────────────────────────────────────────────────────────────────
 
-    // Guarda archivo y retorna modelo
-    public function storeUploadedFile($uploadedFile, int $expireDays = 3, $requestMeta = [], $filePassword = null)
-    {
-        
-        // Generar nombre de archivo seguro
+    public function storeUploadedFile(
+        $uploadedFile,
+        int    $expireDays    = 3,
+        array  $requestMeta   = [],
+        ?string $filePassword = null,
+        ?string $customSlug   = null
+    ): FileShare {
         $filename = Str::random(40) . '.' . $uploadedFile->getClientOriginalExtension();
-        $path = $uploadedFile->storeAs('', $filename, 'uploads'); // guarda en root del disk uploads
 
-        $slug = $this->generateHumanSlug();
+        // S3 o local — transparente gracias al filesystem driver
+        $path = $uploadedFile->storeAs('', $filename, $this->disk);
 
-        // Asegurarse que slug sea único
-        while (FileShare::where('slug', $slug)->exists()) {
-            $slug = $this->generateHumanSlug();
-        }
+        $slug = $this->resolveSlug($customSlug);
 
-        $deleteToken = hash('sha256', Str::random(40) . now()->timestamp);
-
-        $expiresAt = Carbon::now()->addDays($expireDays);
-
-        $file = FileShare::create([
-            'slug' => $slug,
+        return FileShare::create([
+            'type'          => 'file',
+            'slug'          => $slug,
+            'custom_slug'   => filled($customSlug),
             'original_name' => $uploadedFile->getClientOriginalName(),
-            'path' => $path,
-            'mime' => $uploadedFile->getClientMimeType(),
-            'size' => $uploadedFile->getSize(),
-            'delete_token' => $deleteToken,
-            'expires_at' => $expiresAt,
-            'ip' => $requestMeta['ip'] ?? null,
-            'user_agent' => $requestMeta['ua'] ?? null,
+            'path'          => $path,
+            'mime'          => $uploadedFile->getClientMimeType(),
+            'size'          => $uploadedFile->getSize(),
+            'delete_token'  => $this->generateDeleteToken(),
+            'expires_at'    => Carbon::now()->addDays($expireDays),
+            'ip'            => $requestMeta['ip']  ?? null,
+            'user_agent'    => $requestMeta['ua']  ?? null,
             'file_password' => filled($filePassword) ? Hash::make($filePassword) : null,
         ]);
-
-        return $file;
     }
 
-    // Generador de slug "humano"
-    protected function generateHumanSlug()
+    // ────────────────────────────────────────────────────────────────────
+    // GUARDAR NOTA
+    // ────────────────────────────────────────────────────────────────────
+
+    public function storeNote(
+        string  $content,
+        ?string $title        = null,
+        int     $expireDays   = 3,
+        array   $requestMeta  = [],
+        ?string $filePassword = null,
+        ?string $customSlug   = null
+    ): FileShare {
+        return FileShare::create([
+            'type'          => 'note',
+            'slug'          => $this->resolveSlug($customSlug),
+            'custom_slug'   => filled($customSlug),
+            'title'         => $title ?: 'Nota sin título',
+            'original_name' => ($title ?: 'nota') . '.txt',
+            'content'       => $content,
+            'mime'          => 'text/plain',
+            'size'          => strlen($content),
+            'delete_token'  => $this->generateDeleteToken(),
+            'expires_at'    => Carbon::now()->addDays($expireDays),
+            'ip'            => $requestMeta['ip'] ?? null,
+            'user_agent'    => $requestMeta['ua'] ?? null,
+            'file_password' => filled($filePassword) ? Hash::make($filePassword) : null,
+        ]);
+    }
+
+    // ────────────────────────────────────────────────────────────────────
+    // GUARDAR LINK
+    // ────────────────────────────────────────────────────────────────────
+
+    public function storeLink(
+        string  $url,
+        ?string $title       = null,
+        int     $expireDays  = 3,
+        array   $requestMeta = [],
+        ?string $customSlug  = null
+    ): FileShare {
+        return FileShare::create([
+            'type'          => 'link',
+            'slug'          => $this->resolveSlug($customSlug),
+            'custom_slug'   => filled($customSlug),
+            'title'         => $title ?: $url,
+            'original_name' => $title ?: $url,
+            'content'       => $url,
+            'mime'          => 'text/uri-list',
+            'size'          => 0,
+            'delete_token'  => $this->generateDeleteToken(),
+            'expires_at'    => Carbon::now()->addDays($expireDays),
+            'ip'            => $requestMeta['ip'] ?? null,
+            'user_agent'    => $requestMeta['ua'] ?? null,
+        ]);
+    }
+
+    // ────────────────────────────────────────────────────────────────────
+    // HELPERS PRIVADOS
+    // ────────────────────────────────────────────────────────────────────
+
+    /**
+     * Si el usuario pasó un slug personalizado y está disponible, úsalo.
+     * Si está ocupado, lanza excepción (el controller la maneja).
+     * Si no pasó nada, genera uno random "human-readable".
+     */
+    protected function resolveSlug(?string $custom): string
     {
-        // Listas pequeñas, puedes expandir
+        if (filled($custom)) {
+            $clean = Str::slug($custom); // sanitiza
+
+            if (FileShare::where('slug', $clean)->exists()) {
+                throw new \Exception("El slug '{$clean}' ya está en uso. Elige otro.");
+            }
+
+            return $clean;
+        }
+
+        return $this->generateUniqueRandomSlug();
+    }
+
+    protected function generateUniqueRandomSlug(): string
+    {
+        do {
+            $slug = $this->generateHumanSlug();
+        } while (FileShare::where('slug', $slug)->exists());
+
+        return $slug;
+    }
+
+    protected function generateHumanSlug(): string
+    {
         $adjectives = ['rojo','azul','verde','brillante','rapido','silencioso','feliz','lento','firme','suave','alto','bajo'];
-        $nouns = ['gato','lobo','puma','libro','nube','sol','lago','rueda','puente','lirio','cafe','sombra'];
+        $nouns      = ['gato','lobo','puma','libro','nube','sol','lago','rueda','puente','lirio','cafe','sombra'];
 
-        $adj = $adjectives[array_rand($adjectives)];
-        $noun = $nouns[array_rand($nouns)];
-        $num = random_int(1000, 9999);
+        return $adjectives[array_rand($adjectives)]
+            . '-' . $nouns[array_rand($nouns)]
+            . '-' . random_int(1000, 9999);
+    }
 
-        return "{$adj}-{$noun}-{$num}";
+    protected function generateDeleteToken(): string
+    {
+        return hash('sha256', Str::random(40) . now()->timestamp);
     }
 }

@@ -24,9 +24,15 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+        RateLimiter::for('uploads', function (Request $request) {
+    return Limit::perMinutes(10, 10)
+        ->by($request->ip())
+        ->response(function () {
+            return response()->json([
+                'error' => 'Demasiadas subidas. Espera unos minutos e intenta de nuevo.',
+            ], 429);
         });
+});
 
         $this->routes(function () {
             Route::middleware('api')

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Sube archivos temporalmente para compartir de forma fácil y segura">
-    <title>AF Nube | @yield('title')</title>
+    <title>pasa.lat | @yield('title')</title>
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('image/system/logo.png') }}">
 
     <!-- Preload de recursos críticos -->
@@ -57,16 +57,10 @@
         
         .header-section {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 1rem;
         }
         
-        .logo {
-            font-size: 3.5rem;
-            color: var(--primary-color);
-            margin-bottom: 1rem;
-            display: inline-block;
-            transition: var(--transition);
-        }
+       
         
         .logo:hover {
             transform: translateY(-5px);
@@ -149,13 +143,34 @@
     <div class="container py-4 py-md-5">
         <div class="main-container">
             {{-- Header --}}
-            <header class="header-section">
-                <div class="logo">
-                    <i class="bi bi-cloud-arrow-up-fill"></i>
-                </div>
-                <h1 class="page-title">AF Nube</h1>
-                <p class="page-subtitle">Sube, comparte y olvida. Comparte archivos de forma temporal, fácil y segura.</p>
-            </header>
+                <header class="header-section" style="text-align: center;">
+    <div class="logo">
+        <svg width="350" height="auto" viewBox="80 120 440 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            
+            <g stroke="#e00000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="160" cy="165" r="25" stroke="#e00000" fill="none"/>
+                <path d="M152 173H168V165H164L160 161L156 165H152V173Z" fill="none"/>
+                <path d="M160 169V161M160 161L157 164M160 161L163 164" />
+
+                <path d="M190 165H355" />
+                <circle cx="272" cy="165" r="3.5" fill="#e00000"/>
+                <path d="M345 158L355 165L345 172" />
+
+                <circle cx="390" cy="165" r="25" fill="#e00000" stroke="none"/>
+                <path d="M382 173H398V165H394L390 169L386 165H382V173Z" fill="white" stroke="none"/>
+                <path d="M390 161V167M390 167L387 164M390 167L393 164" stroke="white"/>
+            </g>
+
+            <text x="275" y="245" text-anchor="middle" font-family="Arial, sans-serif" font-weight="900" font-size="75" letter-spacing="-2">
+                <tspan fill="#1f2937">pasa</tspan><tspan fill="#e00000">.lat</tspan>
+            </text>
+
+            <text x="300" y="285" text-anchor="middle" font-family="Arial, sans-serif" font-weight="600" font-size="18" fill="#4b5563">
+                Comparte al instante · sin cuenta · se autodestruye
+            </text>
+        </svg>
+    </div>
+</header>
 
             {{-- Main content --}}
             <main>

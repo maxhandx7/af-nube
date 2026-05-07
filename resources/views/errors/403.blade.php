@@ -16,7 +16,8 @@
   <!-- inject:css -->
   {!! Html::style('melody/css/style.css') !!}
   <!-- endinject -->
-  <link rel="shortcut icon" href="{{asset('image/'.$business->logo)}}" />
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
 </head>
 
 <body>
