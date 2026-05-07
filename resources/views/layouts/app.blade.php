@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Sube archivos temporalmente para compartir de forma fácil y segura">
     <title>pasa.lat | @yield('title')</title>
-    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('image/system/logo.png') }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('image/pasa_lat_logo3.svg') }}">
 
     <!-- Preload de recursos críticos -->
     <link rel="preload" href="/falcon/public/vendors/simplebar/simplebar.min.css" as="style">
@@ -189,14 +189,14 @@
             <div class="row g-0 justify-content-between align-items-center fs-10">
                 <div class="col-12 col-sm-auto text-center text-sm-start mb-2 mb-sm-0">
                     <p class="mb-0 text-600">Copyright <span class="d-none d-sm-inline-block">| </span><br
-                            class="d-sm-none" /> 2025 &copy;
-                        <a href="https://www.afdeveloper.com/" class="text-decoration-none">AF</a>
+                            class="d-sm-none" /> {{ date('Y') }} &copy;
+                        <a href="https://www.afdeveloper.com/" target="_blank" class="text-decoration-none">AF</a>
                     </p>
                 </div>
                 <div class="col-12 col-sm-auto text-center text-sm-end">
                     <p class="mb-0 text-600">Desarrollado con&nbsp;
                         <span class="text-danger">&#10084;</span>&nbsp; por&nbsp;
-                        <a href="https://www.afdeveloper.com/" class="text-decoration-none">AF Developer</a>
+                        <a href="https://www.afdeveloper.com/" target="_blank" class="text-decoration-none">AF Developer</a>
                     </p>
                 </div>
             </div>

@@ -328,6 +328,12 @@
                 </form>
             </div>
 
+            <div class="row mt-5">
+                            <div class="col-12 text-center mt-xl-2">
+                                <a class="btn btn-primary font-weight-medium" href="{{ url('/') }}">Volver a subir</a>
+                            </div>
+                        </div>
+
         </div>
     </div>
 @endsection

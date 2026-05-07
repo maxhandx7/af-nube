@@ -55,6 +55,7 @@
                             <div class="alert alert-warning">
                                 <i class="bi bi-shield-exclamation me-2"></i>
                                 Intentos fallidos: {{ session('attempts') }} de 5
+
                             </div>
                         @endif
 
@@ -62,6 +63,7 @@
                             <label for="password" class="form-label fw-semibold">
                                 <i class="bi bi-key me-1"></i>Contraseña del archivo
                             </label>
+                            
                             <div class="input-group">
                                 <input type="password" 
                                        name="password" 

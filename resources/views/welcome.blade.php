@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Af-nube - Compartir archivos fácilmente')
+@section('title', 'Compartir archivos fácilmente')
 
 @section('content')
     <div class="card shadow-lg border-0 upload-card">
@@ -61,7 +61,7 @@
                             id="file-drop-area">
                             <i class="bi bi-cloud-arrow-up display-4 text-muted mb-3"></i>
                             <p class="mb-2">Arrastra tu archivo aquí o haz clic para seleccionar</p>
-                            <p class="small text-muted mb-3">Tamaño máximo: 10GB</p>
+                            <p class="small text-muted mb-3">Tamaño máximo: 50 MB</p>
                             <input type="file" name="file" id="file" class="file-input" required>
                             <div class="file-info mt-3" id="file-info"></div>
                         </div>
