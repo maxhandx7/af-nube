@@ -475,17 +475,42 @@
         }
 
         // ── Compartir (Web Share API) ────────────────────────────────────
-        function shareFile() {
-            const shareUrl = document.getElementById('share-url')?.value ?? window.location.href;
-            if (navigator.share) {
-                navigator.share({
-                    title: '{{ addslashes($file->title ?? $file->original_name) }}',
-                    url: shareUrl
-                });
-            } else {
-                navigator.clipboard.writeText(shareUrl).then(() => alert('Enlace copiado al portapapeles'));
-            }
-        }
+ function shareFile() {
+  const shareData = {
+    title: '{{ $file->title ?? $file->original_name }}',
+    text: '¡Mira este archivo que compartí contigo!',
+    url: window.location.href
+  };
+
+  if (navigator.share) {
+    // Si el navegador es compatible (Móviles, Windows, macOS)
+    navigator.share(shareData)
+      .then(() => console.log('Compartido'))
+      .catch((err) => console.log('Cancelado o error:', err));
+  } else {
+    // Si NO es compatible (Linux, Navegadores viejos), usamos botones manuales
+    showFallbackShare(shareData);
+  }
+}
+
+function showFallbackShare(data) {
+  const urlEncoded = encodeURIComponent(data.url);
+  const textEncoded = encodeURIComponent(data.text);
+
+  Swal.fire({
+    title: 'Compartir enlace',
+    html: `
+      <div class="d-flex justify-content-around mt-3">
+        <a href="https://wa.me/?text=${textEncoded}%20${urlEncoded}" target="_blank" class="text-success"><i class="bi bi-whatsapp display-6"></i></a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=${urlEncoded}" target="_blank" class="text-primary"><i class="bi bi-facebook display-6"></i></a>
+        <a href="https://twitter.com/intent/tweet?text=${textEncoded}&url=${urlEncoded}" target="_blank" class="text-dark"><i class="bi bi-twitter-x display-6"></i></a>
+        <button onclick="copyToClipboard('${data.url}')" class="btn btn-light"><i class="bi bi-link-45deg display-6"></i></button>
+      </div>
+    `,
+    showConfirmButton: false,
+    showCloseButton: true
+  });
+}
 
         // ── Copiar nota ─────────────────────────────────────────────────
         function copyNoteContent() {
